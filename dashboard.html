@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translation Service - SecureTranslate</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>SecureTranslate</h1>
+
+    <div id="app-section">
+      <h3>Welcome, <span id="user-email"></span></h3>
+      
+      <h4>Text to translate</h4>
+      <textarea id="input-text" rows="6" placeholder="Type your text here..."></textarea>
+
+      <!-- New PDF upload input -->
+      <div class="file-upload">
+        <label for="pdf-upload"><strong>Or upload a PDF file:</strong></label>
+        <input type="file" id="pdf-upload" accept="application/pdf">
+      </div>
+
+      <button id="translateBtn">Translate</button>
+
+      <h4>Translation</h4>
+      <textarea id="output-text" rows="6" readonly></textarea>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
