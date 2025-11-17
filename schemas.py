@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 class UserCreate(BaseModel):
@@ -10,4 +11,4 @@ class UserLogin(BaseModel):
 
 class UserOut(BaseModel):
     email: str
-    token: str | None = None
+    token: Optional[str] = None
