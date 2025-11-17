@@ -2,30 +2,33 @@
 const loginBtn = document.getElementById('loginBtn');
 if (loginBtn) {
   loginBtn.addEventListener('click', () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    if (!email || !password) return alert('Please fill in both fields');
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-    /*
-    BACKEND CONNECTION POINT:
-    Here you'd send the credentials to your API Gateway (Flask):
-    fetch('http://localhost:5000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+  if (!email || !password) return alert('Please fill in both fields');
+
+  fetch('http://127.0.0.1:5000/api/v1/users/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  })
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(err => {
+          throw new Error(err.detail || "Login failed");
+        });
+      }
+      return res.json();
     })
-    .then(res => res.json())
     .then(data => {
-      localStorage.setItem('token', data.token); // store JWT token
-      localStorage.setItem('user', email);
-      window.location.href = 'inhoud.html'; // redirect after login
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', data.email);
+      window.location.href = 'dashboard.html';
+    })
+    .catch(err => {
+      alert("Login failed: " + err.message);
     });
-    */
-
-    // Mocked login for school demo
-    localStorage.setItem('user', email);
-    window.location.href = 'dashboard.html'; // redirect to secure page
-  });
+});
 }
 
 function showApp(email) {
@@ -90,7 +93,7 @@ async function translateText() {
   which forwards it to the FastAPI Translation Service (Python/Llama):
 
   const token = localStorage.getItem('token');
-  await fetch('http://localhost:5000/api/translate', {
+  await fetch('http://127.0.0.1:5000/api/v1/translate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
