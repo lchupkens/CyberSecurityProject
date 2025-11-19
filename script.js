@@ -31,6 +31,42 @@ if (loginBtn) {
 });
 }
 
+const registerBtn = document.getElementById("registerBtn");
+if (registerBtn) {
+  registerBtn.addEventListener("click", () => {
+    console.log("Register button clicked"); // debug
+    window.location.href = "register.html";
+  });
+}
+
+// ===== FRONTEND REGISTRATION LOGIC =====
+const finalRegisterBtn = document.getElementById('finalregisterBtn');
+if (finalRegisterBtn) {
+  finalRegisterBtn.addEventListener('click', () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!email || !password) return alert('Please fill in all fields');
+
+    // Mock registration
+    alert("Registered successfully (mock)");
+    window.location.href = "login.html";
+
+    /* Backend version:
+    fetch('http://127.0.0.1:5000/api/v1/users/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    })
+      .then(res => res.json())
+      .then(data => {
+        alert("Registration successful!");
+        window.location.href = "login.html";
+      });
+    */
+  });
+}
+
 function showApp(email) {
   // This function is now only relevant if you later combine pages
   document.getElementById('user-email').innerText = email;
