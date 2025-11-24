@@ -1,0 +1,16 @@
+# Python compilation files
+__pycache__/
+*.py[cod]
+
+# VS Code settings (Personal preferences)
+.vscode/
+
+# Environment files
+.env
+env/
+venv/
+*.anaconda
+
+# Mac/Windows system files
+.DS_Store
+Thumbs.db
