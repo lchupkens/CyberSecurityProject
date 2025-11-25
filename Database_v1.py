@@ -21,12 +21,12 @@ cur.execute("""INSERT INTO cached_translations (id, source_language, target_lang
 (2, 'nl', 'en', 'ik ben Bob', 'I am Bob') """)
 
 # Create a table for user details
-cur.execute("""CREATE TABLE IF NOT EXISTS user_details (employee_id INT PRIMARY KEY, email VARCHAR(100), chached_password VARCHAR(100), role VARCHAR(50) DEFAULT 'user', is_active BOOLEAN DEFAULT FALSE); """)
+cur.execute("""CREATE TABLE IF NOT EXISTS user_details (employee_id INT PRIMARY KEY, email VARCHAR(100), hashed_password VARCHAR(100), role VARCHAR(50) DEFAULT 'user', is_active BOOLEAN DEFAULT FALSE); """)
 
 # Add input to table (currently dummy input)
-cur.execute("""INSERT INTO user_details (employee_id, email, password, role, is_active) VALUES 
-(234, 'bob_marley@bluey.com', '12345', 'employee', TRUE), 
-(235, 'alicia_keys@bluey.com', '678910', 'employee', TRUE) """)
+cur.execute("""INSERT INTO user_details (employee_id, email, hashed_password, role, is_active) VALUES 
+(234, 'bob_marley@bluey.com', '12345', 'user', TRUE), 
+(235, 'alicia_keys@bluey.com', '678910', 'user', TRUE) """)
 
 conn.commit()
 
