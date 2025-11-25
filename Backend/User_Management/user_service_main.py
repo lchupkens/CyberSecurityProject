@@ -25,3 +25,7 @@ def login(user: UserLogin):
 @app.get("/users")
 def list_users(current_user: str = Depends(get_current_user)):
     return {"registered_users": list(fake_users_db.keys()), "requester": current_user}
+
+@app.get("/admin-only")
+def admin_dashboard(current_user = Depends(require_role("admin"))):
+    return {"message": f"Welcome, {current_user['email']}!"}
