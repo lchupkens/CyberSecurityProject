@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[22]:
+# In[4]:
 
 
 # Import package for postgreSQL
@@ -21,12 +21,12 @@ cur.execute("""INSERT INTO cached_translations (id, source_language, target_lang
 (2, 'nl', 'en', 'ik ben Bob', 'I am Bob') """)
 
 # Create a table for user details
-cur.execute("""CREATE TABLE IF NOT EXISTS user_details (employee_id INT PRIMARY KEY, first_name VARCHAR(50), last_name VARCHAR(50), email VARCHAR(100), password VARCHAR(100), role VARCHAR(50) DEFAULT 'user', is_active BOOLEAN DEFAULT FALSE); """)
+cur.execute("""CREATE TABLE IF NOT EXISTS user_details (employee_id INT PRIMARY KEY, email VARCHAR(100), chached_password VARCHAR(100), role VARCHAR(50) DEFAULT 'user', is_active BOOLEAN DEFAULT FALSE); """)
 
 # Add input to table (currently dummy input)
-cur.execute("""INSERT INTO user_details (employee_id, first_name, last_name, email, password, role, is_active) VALUES 
-(234, 'Bob', 'Marley', 'bob_marley@bluey.com', '12345', 'employee', TRUE), 
-(235, 'Alicia', 'Keys', 'alicia_keys@bluey.com', '678910', 'employee', TRUE) """)
+cur.execute("""INSERT INTO user_details (employee_id, email, password, role, is_active) VALUES 
+(234, 'bob_marley@bluey.com', '12345', 'employee', TRUE), 
+(235, 'alicia_keys@bluey.com', '678910', 'employee', TRUE) """)
 
 conn.commit()
 
