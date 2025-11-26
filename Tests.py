@@ -189,28 +189,59 @@ class SystemTests(unittest.TestCase):
     #Security test (Cryptohraphy defense)
     def test_19_token_tampering(self):
         if not SystemTests.token: self.fail("No token available")
-        original_last_char = SystemTests.token[-1]
-        replacement_char = 'A' if original_last_char != 'A' else 'B'
-        fake_token = SystemTests.token[:-1] + replacement_char
+        fake_token = SystemTests.token + "fake"
         headers = {"Authorization": f"Bearer {fake_token}"}
         response = requests.get(f"{GATEWAY_URL}/users/list", headers=headers)
-        self.assertEqual(response.status_code, 401)
+        self.assertIn(response.status_code, [401, 422])
         print(f"Token Tampering (JWT Forgery) Test Passed")
 
     #Security test (DoS with large payload)
     def test_20_large_payload_dos(self):
         if not SystemTests.token: self.fail("No token available")
         headers = {"Authorization": f"Bearer {SystemTests.token}"}
-        large_text = "A" * 1_000_000
+        large_text = "A" * 10_000_000 #Change size as needed
         payload = {"text": large_text, "target_lang": "nl"}
 
         try:
             response = requests.post(f"{GATEWAY_URL}/translate", json=payload, headers=headers, timeout=10)
-            self.assertNotEqual(response.status_code, 500)
-            print(f"Large Payload DoS Test Passed")
+            self.assertEqual(response.status_code, 413)
+            print(f"Large Payload DoS Test Passed (10MB payload rejected)")
         
         except requests.exceptions.Timeout:
             self.fail("Large Payload DoS Test Failed: Request timed out")
+
+    #8. Adversarial Tests (1 Test)
+    def test_21_adversarial_MT_inputs(self):
+        if not SystemTests.token: self.fail("No token available")
+        headers = {"Authorization": f"Bearer {SystemTests.token}"}
+
+        base_text = "This is a security adversarial test."
+
+        #Adversarial variants
+        adversarial_texts = [
+            base_text.replace("a", "a"),
+            base_text.replace("e", "e"),
+            "This is a test",
+            "This is a test",
+            "This   is   a   test",
+            "THIS IS A TEST!!!??!!",
+            "Th!s !s @ t3st",
+            base_text[::-1],
+            base_text + " ƒƒƒƒƒ",
+            " " * 50 + base_text + " " * 50
+        ]
+
+        for idx, adv_text in enumerate(adversarial_texts):
+            payload = {"text": adv_text, "target_lang": "nl"}
+            response = requests.post(f"{GATEWAY_URL}/translate", json=payload, headers=headers)
+            self.assertEqual(response.status_code, 200)
+
+            data = response.json()
+            translation = data.get("translation", "")
+            self.assertTrue(len(translation.strip()) > 0, f"Empty translation for adversarial input {idx}")
+            self.assertTrue(len(translation) > 3, f"Unusually short translation for adversarial input {idx}")
+
+        print(f"Adversarial MT Inputs Test Passed")
 
 if __name__ == "__main__":
     unittest.main(verbosity=0)

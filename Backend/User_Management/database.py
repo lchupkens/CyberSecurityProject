@@ -1,13 +1,17 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_db_connection():
     return psycopg2.connect(
-        host="localhost",
-        dbname="postgres",
-        user="postgres",
-        password="CyberTribe",
-        port=5432
+        host=os.getenv("DB_HOST"),
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=os.getenv("DB_PORT")
     )
 
 def get_user_by_email(email: str):

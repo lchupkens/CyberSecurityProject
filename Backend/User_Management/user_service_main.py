@@ -2,12 +2,16 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from schemas import UserCreate, UserLogin, UserOut
 from auth import hash_password, verify_password, create_access_token, get_current_user
 from database import get_user_by_email, create_user, get_all_users
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(title="User Management Service")
 
 #Configuration
 ALLOWED_DOMAIN = "@cybertribe.com" #Restrict registrations to this domain
-COMPANY_REGISTRATION_KEY = "SecureTribe2025!" #Later move to env variable
+COMPANY_REGISTRATION_KEY = os.getenv("COMPANY_REGISTRATION_KEY")
 
 @app.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def register(user: UserCreate):

@@ -1,36 +1,36 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_db_connection():
     return psycopg2.connect(
-        host="localhost",
-        dbname="postgres",
-        user="postgres",
-        password="CyberTribe",
-        port=5432
+        host=os.getenv("DB_HOST"),
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=os.getenv("DB_PORT")
     )
 
-def get_cached_translation(user_id: str, source_text: str, target_lang: str):
+def get_all_user_translations(user_id: str, target_lang: str):
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
 
     cur.execute(
         """
-        SELECT translated_text 
+        SELECT source_text, translated_text 
         FROM cached_translations 
-        WHERE user_id = %s AND source_text = %s AND target_language = %s;
+        WHERE user_id = %s AND target_language = %s;
         """,
-        (user_id, source_text, target_lang)
+        (user_id, target_lang)
     )
-
-    result = cur.fetchone()
+    results= cur.fetchall()
 
     cur.close()
     conn.close()
-
-    if result:
-        return result["translated_text"]
-    return None
+    return results
 
 def save_translation(user_id: str, source_text: str, target_lang: str, translated_text: str):
     conn = get_db_connection()
