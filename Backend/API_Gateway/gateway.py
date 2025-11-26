@@ -44,11 +44,11 @@ async def register_user(request: Request):
         #Forward the request to the User Management Service's /register endpoint
         response = await http_client.post(f"{USER_SERVICE_URL}/register", json=body)
         
-        #If the backend responded successfully (e.g., 200, 201)
-        if response.is_success:
+        #If success or if it's a 422 (Validation Error) or 400 (Bad Request)
+        if response.is_success or response.status_code in [400, 422]:
             return JSONResponse(content=response.json(), status_code=response.status_code)
         
-        #If the backend returned an error (e.g., 400, 404, 500)
+        #For other errors (500s)
         else:
             #Re-raise the HTTPException from the backend
             raise HTTPException(status_code=response.status_code, detail=response.json().get("detail", "Error from user service"))

@@ -49,13 +49,14 @@ if (finalRegisterBtn) {
   finalRegisterBtn.addEventListener('click', () => {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
+    const secretKey = document.getElementById('company-secret').value.trim();
 
-    if (!email || !password) return alert('Please fill in all fields');
+    if (!email || !password || !secretKey) return alert('Please fill in all fields');
 
     fetch(`${GATEWAY_URL}/api/v1/users/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email: email, password: password, secret_key: secretKey })
     })
       .then(res => {
         if (!res.ok) {
