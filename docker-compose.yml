@@ -1,0 +1,70 @@
+services:
+  #1. The Database
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=CyberTribe
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  #2. User Service
+  user_service:
+    build:
+      context: .
+      dockerfile: Backend/user_management/Dockerfile
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  #3. Translation Service
+  mt_service:
+    build:
+      context: .
+      dockerfile: Backend/MT_component/Dockerfile
+    ports:
+      - "8002:8002"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  #4. API Gateway
+  gateway:
+    build:
+      context: .
+      dockerfile: Backend/API_gateway/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - USER_SERVICE_URL=http://user_service:8001
+      - TRANSLATION_SERVICE_URL=http://mt_service:8002
+    depends_on:
+      - user_service
+      - mt_service
+
+  #5. Frontend
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5500:80"
+
+volumes:
+  postgres_data:
