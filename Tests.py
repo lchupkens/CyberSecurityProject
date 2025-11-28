@@ -164,7 +164,7 @@ class SystemTests(unittest.TestCase):
         self.assertTrue(response.status_code in [401, 422, 500])
         print(f"Integration Logout Flow Test Passed")
 
-    #7. Security Integration Tests (4 Tests)
+    #7. Security Integration Tests (5 Tests)
 
     #Security test (SQL Injection defense)
     def test_17_sql_injection_attempt(self):
@@ -209,7 +209,8 @@ class SystemTests(unittest.TestCase):
         
         except requests.exceptions.Timeout:
             self.fail("Large Payload DoS Test Failed: Request timed out")
-    
+
+    #Encryption integrity test
     def test_21_encryption_integrity(self):
         if not SystemTests.token: self.fail("No token available")
         unique_text = f"IntegrityTest_{RANDOM_ID}"
