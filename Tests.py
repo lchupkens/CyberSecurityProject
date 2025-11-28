@@ -4,9 +4,9 @@ import uuid
 import time
 
 #Configuration
-GATEWAY_URL = "http://127.0.0.1:8000/api/v1"
-FRONTEND_URL = "http://127.0.0.1:5500"
-USER_SERVICE_DIRECT = "http://127.0.0.1:8001"
+GATEWAY_URL = "http://gateway:8000/api/v1"
+FRONTEND_URL = "http://frontend:80"
+USER_SERVICE_DIRECT = "http://user_service:8001"
 
 #Random user generation
 RANDOM_ID = str(uuid.uuid4())[:8]
@@ -209,9 +209,23 @@ class SystemTests(unittest.TestCase):
         
         except requests.exceptions.Timeout:
             self.fail("Large Payload DoS Test Failed: Request timed out")
+    
+    def test_21_encryption_integrity(self):
+        if not SystemTests.token: self.fail("No token available")
+        unique_text = f"IntegrityTest_{RANDOM_ID}"
+        headers = {"Authorization": f"Bearer {SystemTests.token}"}
+        payload = {"text": unique_text, "target_lang": "nl"}
+
+        requests.post(f"{GATEWAY_URL}/translate", json=payload, headers=headers)
+        response = requests.post(f"{GATEWAY_URL}/translate", json=payload, headers=headers)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("cache", data["source"])
+        self.assertTrue(len(data["translation"]) > 5)
+        print(f"Encryption Integrity Test Passed")
 
     #8. Adversarial Tests (1 Test)
-    def test_21_adversarial_MT_inputs(self):
+    def test_22_adversarial_MT_inputs(self):
         if not SystemTests.token: self.fail("No token available")
         headers = {"Authorization": f"Bearer {SystemTests.token}"}
 

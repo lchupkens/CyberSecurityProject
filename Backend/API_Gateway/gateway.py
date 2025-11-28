@@ -3,10 +3,11 @@ from fastapi.responses import JSONResponse
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import os
 
 #Configuration
-USER_SERVICE_URL = "http://127.0.0.1:8001"
-TRANSLATION_SERVICE_URL = "http://127.0.0.1:8002"
+USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://127.0.0.1:8001")
+TRANSLATION_SERVICE_URL = os.getenv("TRANSLATION_SERVICE_URL", "http://127.0.0.1:8002")
 
 #httpx client for making async requests
 http_client = None
@@ -100,7 +101,7 @@ async def translate_text(request: Request):
         raise HTTPException(status_code=401, detail="Missing Authorization Header")
     
     content_length = request.headers.get("content-length")
-    MAX_BYTES = 2 * 1024 * 1024  # 2 MB limit
+    MAX_BYTES = 2 * 1024 * 1024  #2 MB limit
     if content_length and int(content_length) > MAX_BYTES:
         raise HTTPException(status_code=413, detail="Payload too large. Maximum size is 2 MB.")
 
@@ -123,8 +124,7 @@ async def translate_text(request: Request):
 
         payload = {"text": body.get("text"), "target_lang": body.get("target_lang", "nl"), "user_id": user_email}
 
-        async with httpx.AsyncClient() as client:
-            response = await client.post(f"{TRANSLATION_SERVICE_URL}/translate", json=payload, timeout=60.0)
+        response = await http_client.post(f"{TRANSLATION_SERVICE_URL}/translate", json=payload, timeout=60.0)
         
         return JSONResponse(content=response.json(), status_code=response.status_code)
     
